@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const Promotion = require('../models/promotions');
+const authenticate = require('../authenticate');
 
 const promotionsRouter = express.Router();
 
@@ -16,7 +17,7 @@ promotionsRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err))
 })
-.post((req,res,next) => {
+.post(authenticate.verifyUser,(req,res,next) => {
     Promotion.create(req.body)
     .then((promotion) => {
         res.statusCode = 200;
@@ -25,11 +26,11 @@ promotionsRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err))
 })
-.put((req,res,next) => {
+.put(authenticate.verifyUser,(req,res,next) => {
     res.statusCode = 403
     res.end('PUT operation not supported on /promotions')
 })
-.delete((req,res,next) => {
+.delete(authenticate.verifyUser,(req,res,next) => {
     Promotion.remove({})
     .then((resp)=>{
         res.statusCode = 200;
@@ -50,11 +51,11 @@ promotionsRouter.route('/:promotionId')
     }, (err) => next(err))
     .catch((err)=>next(err))
 })
-.post((req,res,next) => {
+.post(authenticate.verifyUser,(req,res,next) => {
     res.end('POST operation not supported on /promotiones/'+
      req.params.promotionId)
 })
-.put((req,res,next) => {
+.put(authenticate.verifyUser,(req,res,next) => {
     Promotion.findByIdAndUpdate(req.params.promotionId, {
         $set: req.body
     }, { new: true })
@@ -65,7 +66,7 @@ promotionsRouter.route('/:promotionId')
     }, (err)=>next(err))
     .catch((err) => next(err))
 })
-.delete((req,res,next) => {
+.delete(authenticate.verifyUser,(req,res,next) => {
     Promotion.findByIdAndRemove(req.params.promotionId)
     .then((resp) => {
         res.statusCode = 200;
